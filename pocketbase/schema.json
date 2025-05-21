@@ -1,0 +1,148 @@
+{
+  "collections": [
+    {
+      "name": "users",
+      "type": "auth",
+      "schema": [
+        {
+          "name": "name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "required": true,
+          "unique": true
+        },
+        {
+          "name": "avatar",
+          "type": "file",
+          "required": false
+        }
+      ]
+    },
+    {
+      "name": "events",
+      "type": "base",
+      "schema": [
+        {
+          "name": "title",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "name": "location",
+          "type": "text",
+          "required": true
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "required": false
+        },
+        {
+          "name": "organizer",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": false
+          }
+        },
+        {
+          "name": "maxAttendees",
+          "type": "number",
+          "required": false
+        },
+        {
+          "name": "allowPlusOne",
+          "type": "bool",
+          "required": true,
+          "default": false
+        }
+      ]
+    },
+    {
+      "name": "friendships",
+      "type": "base",
+      "schema": [
+        {
+          "name": "user1",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "user2",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "options": {
+            "values": ["pending", "accepted", "rejected"]
+          }
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_unique_friendship ON friendships (user1, user2)"
+      ]
+    },
+    {
+      "name": "event_attendees",
+      "type": "base",
+      "schema": [
+        {
+          "name": "event",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "events",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "user",
+          "type": "relation",
+          "required": true,
+          "options": {
+            "collectionId": "users",
+            "cascadeDelete": true
+          }
+        },
+        {
+          "name": "status",
+          "type": "select",
+          "required": true,
+          "options": {
+            "values": ["going", "maybe", "not_going"]
+          }
+        },
+        {
+          "name": "plusOne",
+          "type": "bool",
+          "required": true,
+          "default": false
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_unique_attendance ON event_attendees (event, user)"
+      ]
+    }
+  ]
+} 
